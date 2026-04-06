@@ -13,8 +13,8 @@ const commands = [
   new SlashCommandBuilder()
     .setName("spam")
     .setDescription("Spam un message dans ce salon")
-    .setIntegrationTypes([0, 1]) // 0 = Guild Install, 1 = User Install
-    .setContexts([0, 1, 2]) // 0 = Guild, 1 = BotDM, 2 = PrivateChannel
+    .setIntegrationTypes([0, 1])
+    .setContexts([0, 1, 2])
     .addIntegerOption((opt) =>
       opt
         .setName("fois")
@@ -39,7 +39,7 @@ async function registerCommands() {
   }
 }
 
-client.once("ready", () => {
+client.once("clientReady", () => {
   console.log(`✅ Bot connecté : ${client.user.tag}`);
   registerCommands();
 });
@@ -51,15 +51,14 @@ client.on("interactionCreate", async (interaction) => {
   const fois = interaction.options.getInteger("fois") ?? 5;
 
   await interaction.reply({
+    flags: 64, // ephemeral sans le warning deprecated
     content: `✅ Spam lancé **${fois}x** !`,
-    ephemeral: true,
   });
 
   for (let i = 0; i < fois; i++) {
     try {
-      await interaction.channel.send("LEMESSAGE");
+      await interaction.followUp({ content: "LEMESSAGE" });
     } catch (e) {
-      // Si pas accès au salon, on arrête
       console.error("Impossible d'envoyer le message :", e.message);
       break;
     }
