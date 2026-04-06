@@ -13,12 +13,14 @@ const commands = [
   new SlashCommandBuilder()
     .setName("spam")
     .setDescription("Spam un message dans ce salon")
+    .setIntegrationTypes([0, 1]) // 0 = Guild Install, 1 = User Install
+    .setContexts([0, 1, 2]) // 0 = Guild, 1 = BotDM, 2 = PrivateChannel
     .addIntegerOption((opt) =>
       opt
         .setName("fois")
-        .setDescription("Nombre de fois (max 20)")
+        .setDescription("Nombre de fois (max 20000000)")
         .setMinValue(1)
-        .setMaxValue(20)
+        .setMaxValue(20000000)
         .setRequired(false)
     )
     .toJSON(),
@@ -54,8 +56,14 @@ client.on("interactionCreate", async (interaction) => {
   });
 
   for (let i = 0; i < fois; i++) {
-    await interaction.channel.send("LEMESSAGE");
-    if (i < fois - 1) await new Promise((r) => setTimeout(r, 1000));
+    try {
+      await interaction.channel.send("LEMESSAGE");
+    } catch (e) {
+      // Si pas accès au salon, on arrête
+      console.error("Impossible d'envoyer le message :", e.message);
+      break;
+    }
+    if (i < fois - 1) await new Promise((r) => setTimeout(r, 400));
   }
 });
 
