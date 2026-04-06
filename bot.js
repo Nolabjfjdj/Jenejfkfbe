@@ -4,6 +4,9 @@ const {
   REST,
   Routes,
   SlashCommandBuilder,
+  ButtonBuilder,
+  ButtonStyle,
+  ActionRowBuilder,
 } = require("discord.js");
 require("dotenv").config();
 
@@ -18,7 +21,7 @@ const commands = [
     .addIntegerOption((opt) =>
       opt
         .setName("fois")
-        .setDescription("Nombre de fois (max 20000000)")
+        .setDescription("Nombre de fois")
         .setMinValue(1)
         .setMaxValue(20000000)
         .setRequired(false)
@@ -39,30 +42,87 @@ async function registerCommands() {
   }
 }
 
+// Stocke les sessions de spam en cours
+const spamSessions = new Map();
+
+async function envoyerChunk(interaction, restant, sessionId) {
+  const chunk = Math.min(5, restant);
+
+  for (let i = 0; i < chunk; i++) {
+    try {
+      await interaction.followUp({ content: "GET NUKED, I RAPE YOU" });
+    } catch (e) {
+      console.error("Erreur envoi :", e.message);
+      break;
+    }
+    if (i < chunk - 1) await new Promise((r) => setTimeout(r, 1000));
+  }
+
+  const nouveauRestant = restant - chunk;
+
+  if (nouveauRestant <= 0) {
+    // Tout envoyé
+    spamSessions.delete(sessionId);
+    await interaction.followUp({
+      content: "✅ Spam terminé !",
+      flags: 64,
+    });
+    return;
+  }
+
+  // Il reste des messages, propose le bouton Continuer
+  const bouton = new ButtonBuilder()
+    .setCustomId(`continuer_${sessionId}`)
+    .setLabel(`Continuer (${nouveauRestant} restants)`)
+    .setStyle(ButtonStyle.Primary);
+
+  const row = new ActionRowBuilder().addComponents(bouton);
+
+  spamSessions.set(sessionId, { restant: nouveauRestant, interaction });
+
+  await interaction.followUp({
+    content: `⏸️ Pause — encore **${nouveauRestant}** messages à envoyer.`,
+    components: [row],
+    flags: 64,
+  });
+}
+
 client.once("clientReady", () => {
   console.log(`✅ Bot connecté : ${client.user.tag}`);
   registerCommands();
 });
 
 client.on("interactionCreate", async (interaction) => {
-  if (!interaction.isChatInputCommand()) return;
-  if (interaction.commandName !== "spam") return;
+  // Commande /spam
+  if (interaction.isChatInputCommand() && interaction.commandName === "spam") {
+    const fois = interaction.options.getInteger("fois") ?? 5;
+    const sessionId = `${interaction.user.id}_${Date.now()}`;
 
-  const fois = interaction.options.getInteger("fois") ?? 5;
+    await interaction.reply({
+      content: `✅ Spam lancé **${fois}x** !`,
+      flags: 64,
+    });
 
-  await interaction.reply({
-    flags: 64, // ephemeral sans le warning deprecated
-    content: `✅ Spam lancé **${fois}x** !`,
-  });
+    await envoyerChunk(interaction, fois, sessionId);
+    return;
+  }
 
-  for (let i = 0; i < fois; i++) {
-    try {
-      await interaction.followUp({ content: "LEMESSAGE" });
-    } catch (e) {
-      console.error("Impossible d'envoyer le message :", e.message);
-      break;
+  // Bouton Continuer
+  if (interaction.isButton() && interaction.customId.startsWith("continuer_")) {
+    const sessionId = interaction.customId.replace("continuer_", "");
+    const session = spamSessions.get(sessionId);
+
+    if (!session) {
+      await interaction.reply({
+        content: "❌ Session expirée.",
+        flags: 64,
+      });
+      return;
     }
-    if (i < fois - 1) await new Promise((r) => setTimeout(r, 400));
+
+    await interaction.deferUpdate();
+    await envoyerChunk(session.interaction, session.restant, sessionId);
+    return;
   }
 });
 
