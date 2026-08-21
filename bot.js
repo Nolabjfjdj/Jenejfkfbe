@@ -44,7 +44,7 @@ const row = new ActionRowBuilder().addComponents(boutonSpam);
 async function envoyerSpam(interaction) {
   for (let i = 0; i < 5; i++) {
     try {
-      await interaction.followUp({ content: "test" });
+      await interaction.followUp({ content: "GOT RAID BTCH @everyone" });
     } catch (e) {
       console.error("Erreur envoi :", e.message);
       break;
