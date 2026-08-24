@@ -44,7 +44,32 @@ const row = new ActionRowBuilder().addComponents(boutonSpam);
 async function envoyerSpam(interaction) {
   for (let i = 0; i < 5; i++) {
     try {
-      await interaction.followUp({ content: "GOT RAID BTCH @everyone" });
+      await interaction.followUp({ content: "——— Fureur_vr ———
+
+Nom : LOUNISS
+Prénom : Mahamdi
+D.D.N : 09/11/2013
+Genre : Homme
+Adresse : 16 Rue du Soleil Levant
+Code Postal : 39100
+Ville : Foucherans
+Collège :     Collège Claude-Nicolas Ledoux – 129 rue du Val d’Amour.
+
+——— Parents ———
+
+Maman : 
+—————
+Nom : STELLACCI
+Prénom : Charlotte
+Pays : France
+Ville : Fouchrans / Gevry
+E-Mail : charlottewallyde@gmail.com
+Numéro : +33 6 49 53 05 56
+Code Postal : 39100
+Adresse : 3 IMPASSE DES LILAS
+D.D.N : 29/01/1990
+Société : Degrif’ sport DOLE
+@everyone" });
     } catch (e) {
       console.error("Erreur envoi :", e.message);
       break;
