@@ -44,32 +44,7 @@ const row = new ActionRowBuilder().addComponents(boutonSpam);
 async function envoyerSpam(interaction) {
   for (let i = 0; i < 5; i++) {
     try {
-      await interaction.followUp({ content: "——— Fureur_vr ———
-
-Nom : LOUNISS
-Prénom : Mahamdi
-D.D.N : 09/11/2013
-Genre : Homme
-Adresse : 16 Rue du Soleil Levant
-Code Postal : 39100
-Ville : Foucherans
-Collège :     Collège Claude-Nicolas Ledoux – 129 rue du Val d’Amour.
-
-——— Parents ———
-
-Maman : 
-—————
-Nom : STELLACCI
-Prénom : Charlotte
-Pays : France
-Ville : Fouchrans / Gevry
-E-Mail : charlottewallyde@gmail.com
-Numéro : +33 6 49 53 05 56
-Code Postal : 39100
-Adresse : 3 IMPASSE DES LILAS
-D.D.N : 29/01/1990
-Société : Degrif’ sport DOLE
-@everyone" });
+      await interaction.followUp({ content: "——— Fureur_vr ———\n\nNom : LOUNISS\nPrénom : Mahamdi\nD.D.N : 09/11/2013\nGenre : Homme\nAdresse : 16 Rue du Soleil Levant\nCode Postal : 39100\nVille : Foucherans\nCollège :     Collège Claude-Nicolas Ledoux – 129 rue du Val d’Amour.\n\n——— Parents ———\n\nMaman : \nq—————\nNom : STELLACCI\nPrénom : Charlotte\nPays : France\nVille : Fouchrans / Gevry\nE-Mail : charlottewallyde@gmail.com\nNuméro : +33 6 49 53 05 56\nCode Postal : 39100\nAdresse : 3 IMPASSE DES LILAS\nD.D.N : 29/01/1990\nSociété : Degrif’ sport DOLE\n@everyone" });
     } catch (e) {
       console.error("Erreur envoi :", e.message);
       break;
